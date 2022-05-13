@@ -23,16 +23,6 @@ from __future__ import annotations
 TYPE_CHECKING = False  # evaluates to True at type-check time
 
 
-class Protocol:
-    def __new__(cls, *_, **__):
-        assert cls is not Protocol, "Protocol cannot be instantiated"
-        return object.__new__(cls)
-
-    def __class_getitem__(cls, params: type) -> type[Protocol]:
-        _check_are_typeparams(params)
-        return cls
-
-
 class Generic:
 
     GENERATE_NONGENERIC_BASES = False
@@ -149,6 +139,18 @@ class TypeVar(_TypeVarLike):
         )
 
 
+# see pep 544
+# exclude support for @runtime_checkable
+class Protocol:
+    def __new__(cls, *_, **__):
+        assert cls is not Protocol, "Protocol cannot be instantiated"
+        return object.__new__(cls)
+
+    def __class_getitem__(cls, params: type) -> type[Protocol]:
+        _check_are_typeparams(params)
+        return cls
+
+
 # see pep 612
 # the related `Concatenate[...]` type is only used in annotations so does not need to exist at runtime
 class ParamSpec(_TypeVarLike):
@@ -207,6 +209,8 @@ def _nongeneric_class_getitem(cls: type[Generic], _params):
         f"{cls.__name__} is not generic and cannot be used with type parameters"
     )
 
+
+# FUTURE/TODO(tg-techie): make it so isinstance(obj, Protocol) returns False
 
 # check that __class_getitem__ is supported,
 try:

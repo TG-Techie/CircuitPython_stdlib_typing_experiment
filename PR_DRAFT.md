@@ -60,6 +60,8 @@ The answer may be either.
 
 Working minimain
 
+no @runtime_checkable, but that shouldn't work anyways
+
 no way to cut-off the **class_getitem** functionality **without** auto-generating an extra class. (If Foo[a, b, c] did not have a typevar or paramspec in a, b, c)>> That class would manually raise an error when **class_getitem** is called on it.
   > In the typing\_.py implementation in python-land, circuitpython implementation this can be turned on/off by setting the GENERATE_NONGENERIC_BASES attribute on the `Generic` class.
 

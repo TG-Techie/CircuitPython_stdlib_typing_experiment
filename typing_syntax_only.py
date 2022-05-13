@@ -20,16 +20,6 @@ from __future__ import annotations
 TYPE_CHECKING = False  # evaluates to True at type-check time
 
 
-class Protocol:
-    def __new__(cls, *_, **__):
-        assert cls is not Protocol, "Protocol cannot be instantiated"
-        return object.__new__(cls)
-
-    def __class_getitem__(cls, params: type) -> type[Protocol]:
-
-        return cls
-
-
 class Generic:
     def __new__(cls, *_, **__):
         assert cls is not Generic, "Generic(...) cannot be instantiated"
@@ -46,36 +36,30 @@ class Generic:
         return cls
 
 
-class TypeVar:
-    # # additional skipped field
-    # __constraints__: tuple[<type parmas ...>] | tuple[()]
+def TypeVar(name: str, *constraints, bound=None, contravariant=False, covariant=False):
+    return None
 
-    def __new__(
-        cls,
-        name: str,
-        *constraints,
-        bound=None,
-        contravariant=False,
-        covariant=False,
-    ):
-        assert cls is TypeVar, "TypeVar cannot be subclassed"
-        return None
+
+# see pep 544
+# exclude support for @runtime_checkable
+class Protocol:
+    def __new__(cls, *_, **__):
+        assert cls is not Protocol, "Protocol cannot be instantiated"
+        return object.__new__(cls)
+
+    def __class_getitem__(cls, params: type) -> type[Protocol]:
+        return cls
 
 
 # see pep 612
 # the related `Concatenate[...]` type is only used in annotations so does not need to exist at runtime
-class ParamSpec:
-    def __new__(cls, name, *, bound=None, covariant=False, contravariant=False):
-        assert cls is ParamSpec, "ParamSpec cannot be subclassed"
-        return None
+def ParamSpec(name, *, bound=None, covariant=False, contravariant=False):
+    return None
 
 
 # see pep 646
-class TypeVarTuple:
-    def __new__(cls, name):
-        assert cls is TypeVarTuple, "TypeVarTuple cannot be subclassed"
-        # allows for Generic[*Shape] where Shpape = TypeVarTuple('Shape')
-        return (None,)
+def TypeVarTuple(name):
+    return (None,)
 
 
 # special form in the pep
