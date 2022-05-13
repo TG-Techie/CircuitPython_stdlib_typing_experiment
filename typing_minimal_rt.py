@@ -5,7 +5,7 @@
 # See repo for license text.
 
 """
-`typing` (circuitpython_stdlib_typing)
+`typing` (typing_minimal_rt)
 =======================
 
 A prototype module for circuitpython to replace the `typing` module in the cpython standard library.
@@ -20,7 +20,7 @@ see preliminary changes in `py/objtype.c` file here https://github.com/TG-Techie
 from __future__ import annotations
 
 
-TYPE_CHECKING: Literal[True] = False  # type: ignore
+TYPE_CHECKING = False  # evaluates to True at type-check time
 
 
 class Protocol:
@@ -149,6 +149,7 @@ class TypeVar(_TypeVarLike):
         )
 
 
+# see pep 612
 # the related `Concatenate[...]` type is only used in annotations so does not need to exist at runtime
 class ParamSpec(_TypeVarLike):
 
@@ -163,6 +164,30 @@ class ParamSpec(_TypeVarLike):
             covariant=covariant,
             contravariant=contravariant,
         )
+
+
+# see pep 646
+class TypeVarTuple(_TypeVarLike):
+
+    __repr_str = "<TypeVarTuple>"
+
+    def __new__(cls, name):
+        assert cls is TypeVarTuple, "TypeVarTuple cannot be subclassed"
+        return _TypeVarLike.__new__(cls, name=name)
+
+    def __iter__(self):  # -> Unpack[Self]
+        return self
+
+
+# Unpack[...] is a special form in cpython, here we use a class (tho we could use {TypeVarTuple(...): object})
+class Unpack:
+    __new__ = None  # type: ignore
+
+    def __class_getitem__(cls, params):
+        assert isinstance(
+            params, TypeVarTuple
+        ), "Unpack[...] only supports a single TypeVarTuple"
+        return params
 
 
 _allowed_param_types = (type, str, _TypeVarLike)
@@ -190,5 +215,5 @@ except TypeError:
     raise RuntimeError(
         " Class typing parameters (ex: Generic[T]) not supported, "
         "you may need to use a different version of circuitpython."
-        "(see: https://github.com/tg-techie/CircuitPython_Typing)"
+        "(see: https://github.com/tg-techie/CircuitPython_stdlib_typing_experiment)"
     )

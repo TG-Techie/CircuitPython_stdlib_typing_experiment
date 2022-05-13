@@ -29,12 +29,19 @@ class Peripheral(Protocol[T]):
 ### Rationale
 
 ## Circuitpython Core Support
-> :warning: TODO(tg-techie, before pr): remove the `|` mention if not added.
+
 
 This PR adds 3 toggle-able features to the core:
-#### `__class_getitem__` from [Pep 560](https://peps.python.org/pep-0560/#class-getitem) as dicussed above.
-#### [Pep 585](https://peps.python.org/pep-0585/) like builin generic `[]` operator on type  so it return itself
+#### [Pep 560](https://peps.python.org/pep-0560/#class-getitem) 
+add `__class_getitem__` as discussed above.
+
+Adds .subscr to `mp_type_type
+
+#### [Pep 585](https://peps.python.org/pep-0585/) 
+add generic `[]` operator to builtin containers and collections to return themselves. 
   ex:`dict[str, int] is dict # True`
+
+
 #### [Pep 604 like](https://peps.python.org/pep-0604/) 
   This adds the `|` operator on type so it returns `object` 
   ex: `(str | None) is object # True`
@@ -61,8 +68,7 @@ no way to cut-off the **class_getitem** functionality **without** auto-generatin
 ## Questions I have / Feedback
 
 - Should the `typing` module be in python-land or the core
-- From some looking around, 
-
+- 
 
 
 ### Background
